@@ -62,8 +62,8 @@ x_test = ts_df_test[['month', 'quarter', 'day_of_year']].values
 #Train and predict from bayesian linear regression
 with pm.Model() as basic_model:
     # Priors for regression coefficients
-    beta = pm.Normal("beta", mu=0, sigma=5, shape=x_train.shape[1])
-    intercept = pm.Normal("intercept", mu=0, sigma=5)
+    beta = pm.Normal("beta", mu=5, sigma=5, shape=x_train.shape[1])
+    intercept = pm.Normal("intercept", mu=30, sigma=20)
     
     # Noise (sigma)
     sigma = pm.HalfNormal("sigma", sigma=2)
@@ -117,30 +117,53 @@ print((np.mean(y_pred_samples[2]))  * (9/5) + 32)
 print((np.mean(y_pred_samples[3])) * (9/5) + 32)
 print((np.mean(y_pred_samples[4])) * (9/5) + 32)
 
+results = []
+
 conf_level = 0.95
 Ld, Ud = mean_confidence_interval(y_pred_samples[0], confidence=conf_level)
 print(f"Sample Mean: {np.mean(y_pred_samples[0] * (9/5) + 32):.2f} °F")
 print(f"{conf_level*100}% Confidence Interval [Ld, Ud] for December 3rd: [{Ld* (9/5) + 32:.2f} °F, {Ud* (9/5) + 32:.2f} °F]")
+
+results.append([np.mean(y_pred_samples[0]) * (9/5) + 32, Ld* (9/5) + 32 ,Ud* (9/5) + 32 ])
 
 conf_level = 0.95
 Ld, Ud = mean_confidence_interval(y_pred_samples[1], confidence=conf_level)
 print(f"Sample Mean: {np.mean(y_pred_samples[1]* (9/5) + 32):.2f} °F")
 print(f"{conf_level*100}% Confidence Interval [Ld, Ud] for December 4th: [{Ld* (9/5) + 32:.2f} °F, {Ud* (9/5) + 32:.2f} °F]")
 
+results.append([np.mean(y_pred_samples[1])  * (9/5) + 32, Ld* (9/5) + 32,Ud* (9/5) + 32 ])
+
 conf_level = 0.95
 Ld, Ud = mean_confidence_interval(y_pred_samples[2], confidence=conf_level)
 print(f"Sample Mean: {np.mean(y_pred_samples[2]* (9/5) + 32):.2f} °F")
 print(f"{conf_level*100}% Confidence Interval [Ld, Ud] for December 5th: [{Ld* (9/5) + 32:.2f} °F, {Ud* (9/5) + 32:.2f} °F]")
+
+results.append([np.mean(y_pred_samples[2])  * (9/5) + 32 , Ld* (9/5) + 32,Ud* (9/5) + 32 ])
 
 conf_level = 0.95
 Ld, Ud = mean_confidence_interval(y_pred_samples[3], confidence=conf_level)
 print(f"Sample Mean: {np.mean(y_pred_samples[3]* (9/5) + 32):.2f} °F")
 print(f"{conf_level*100}% Confidence Interval [Ld, Ud] for December 6th: [{Ld* (9/5) + 32:.2f} °F, {Ud* (9/5) + 32:.2f} °F]")
 
+results.append([np.mean(y_pred_samples[3])  * (9/5) + 32, Ld* (9/5) + 32 ,Ud* (9/5) + 32 ])
+
 conf_level = 0.95
 Ld, Ud = mean_confidence_interval(y_pred_samples[4], confidence=conf_level)
 print(f"Sample Mean: {np.mean(y_pred_samples[4]* (9/5) + 32):.2f} °F")
 print(f"{conf_level*100}% Confidence Interval [Ld, Ud] for December 7th: [{Ld* (9/5) + 32:.2f} °F, {Ud* (9/5) + 32:.2f} °F]")
+
+results.append([np.mean(y_pred_samples[4])  * (9/5) + 32, Ld* (9/5) + 32 , Ud* (9/5) + 32 ])
+
+
+from tabulate import tabulate
+
+headers = ["Dec 3", "Dec 4", "Dec 5", "Dec 6", "Dec 7"]
+
+
+print(tabulate(results, headers=headers, tablefmt="grid"))
+
+
+
 
 
 
